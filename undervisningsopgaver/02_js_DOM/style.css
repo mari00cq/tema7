@@ -3,6 +3,10 @@
   padding: 0;
   box-sizing: border-box;
 }
+h1,
+footer {
+  text-align: center;
+}
 #first_section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
