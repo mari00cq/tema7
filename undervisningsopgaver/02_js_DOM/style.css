@@ -10,7 +10,7 @@ h1,
 footer {
   text-align: center;
 }
-#first_section {
+section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
 }
