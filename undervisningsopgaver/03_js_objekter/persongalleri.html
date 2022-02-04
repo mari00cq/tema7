@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      img {
+        max-width: 100%;
+      }
+      h1,
+      footer {
+        text-align: center;
+      }
+      h2 {
+        padding-bottom: 10px;
+      }
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+      article {
+        padding: 20px;
+        gap: 20px;
+        border: solid 1px grey;
+      }
+    </style>
+  </head>
+  <body>
+    <section></section>
+
+    <template>
+      <article>
+        <h2></h2>
+        <img src="" alt="" />
+        <p class="navn"></p>
+        <p class="efternavn"></p>
+        <p class="email"></p>
+        <img src="" alt="" />
+      </article>
+    </template>
+
+    <script>
+      const container = document.querySelector("section");
+      const template = document.querySelector("template");
+      const url = "https://maria-016f.restdb.io/rest/familie";
+      const key = "61fcf8823f215f310a37be83";
+
+      const options = {
+        headers: {
+          "x-apikey": key,
+        },
+      };
+      async function hentData() {
+        const resspons = await fetch(url, options);
+        const json = await resspons.json();
+        vis(json);
+      }
+
+      function vis(personer) {
+        personer.forEach((person) => {
+          console.log(person);
+          const klon = template.cloneNode(true).content;
+          klon.querySelector("h2").textContent =
+            person.fornavn + " " + person.efternavn;
+
+          klon.querySelector(".email").textContent = person.email;
+          klon.querySelector("img").src = "faces/" + person.profilbillede;
+
+          container.appendChild(klon);
+        });
+      }
+
+      hentData();
+    </script>
+  </body>
+</html>
