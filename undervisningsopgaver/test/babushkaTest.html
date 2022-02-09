@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+
+    <style>
+
+
+           img {
+               width: 100%;
+
+           }
+
+           .personliste {
+               text-align: center;
+               display: grid;
+               grid-gap: 10px;
+               grid-template-columns: repeat(1, 1fr);
+               max-width: 1080px;
+               margin: 0 auto;
+           }
+
+           .grid {
+               height: 100%;
+
+
+
+
+
+           }
+
+           article:nth-child(even) {
+               /*background: rgba(119, 114, 114, 0.27);*/
+           }
+           article:nth-child(odd) {
+               background: #9b9a9a;
+           }
+
+
+
+
+           @media screen and (min-width:600px) {
+
+               .grid {
+                   grid-template-columns: repeat(2, 1fr);
+
+               }
+
+               .personliste {
+                   display: grid;
+                   grid-gap: 10px;
+                   grid-template-columns: repeat(2, 1fr)
+               }
+
+
+
+
+
+
+      @media screen and (min-width:768px) {
+               .grid {
+                   grid-template-columns: repeat(3, 1fr);
+                   max-width: 960px;
+                   margin: 0 auto;
+               }
+               .personliste {
+                   display: grid;
+                   grid-gap: 10px;
+                   grid-template-columns: repeat(3, 1fr)
+               }
+           }
+
+
+                nav {
+               display: flex;
+               justify-content: center;
+               padding: 10px;
+
+           }
+
+
+
+           .filter {
+               display: flex;
+               justify-content: center;
+               margin: 2%;
+               border-width: thick;
+               }
+
+
+
+
+           .filter:hover {
+               opacity: 0.5;
+           }
+           .valgt {
+               background-color: #fc7703;
+           }
+           h1 {
+               display: flex;
+               justify-content: center;
+               font-family: sans-serif;
+           }
+           h2 {
+               font-family: sans-serif;
+           }
+           p {
+               font-family: sans-serif;
+
+           }
+           #popup {
+               position: fixed;
+               top: 0;
+               width: 100vw;
+               height: 100vh;
+               background: rgba(255, 3, 3, 0.44);
+               display: none;
+           }
+           .indhold {
+               width: 70vw;
+               min-height: 50vh;
+               background: #fff;
+               margin: 4rem auto;
+               padding: 10px;
+           }
+           .luk {
+               position: fixed;
+               right: 0;
+               font-size: 2rem;
+           }
+           #overskrift {
+               display: flex;
+               justify-content: center;
+               font-size: 6vw;
+               font-family: sans-serif;
+               color: red;
+               padding: 4vw;
+               padding-left: 0vw;
+           }
+           .background {
+               background-color: #fc7703;
+               height: 15vw;
+           }
+           footer {
+               background: rgba(123, 123, 123, 0.53);
+           }
+           #babush {
+               position: absolute;
+               width: 20vw;
+               height: 20vh;
+               top: 1vw;
+               left: 1vw;
+           }
+    </style>
+  </head>
+
+  <header>
+    <section class="background">
+      <div id="babush">
+        <img src="imgs/large/red-star-pza.png" alt="img" />
+      </div>
+      <div id="overskrift">Bistro Babushka</div>
+    </section>
+  </header>
+
+  <nav>
+    <button class="filter valgt" data-kategori="alle">Alle</button>
+    <button class="filter" data-kategori="forretter">Forretter</button>
+    <button class="filter" data-kategori="hovedretter">Hovedretter</button>
+    <button class="filter" data-kategori="desserter">Desserter</button>
+    <button class="filter" data-kategori="drikkevarer">Drikkevarer</button>
+  </nav>
+
+  <h1>Alle</h1>
+
+  <body>
+    <template>
+      <article class="grid">
+        <img src="" alt="" />
+
+        <h2></h2>
+        <p class="kort"></p>
+        <p class="alder">Pris:</p>
+      </article>
+    </template>
+
+    <div id="popup">
+      <button class="luk">X</button>
+      <section class="indhold">
+        <article class="enkeltPerson">
+          <h2></h2>
+          <img class="billedeo" src="" alt="" />
+          <p class="kort"></p>
+        </article>
+      </section>
+    </div>
+
+    <section class="personliste"></section>
+    <script>
+      document.addEventListener("DOMContentLoaded", getjson);
+      const modtagerKloner = document.querySelector("personliste");
+      const temp = document.querySelector("template");
+      let personer;
+      let filter = "alle";
+      async function getjson() {
+        let jsondata = await fetch(
+          "https://spreadsheets.google.com/feeds/list/17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0/od6/public/values?alt=json"
+        );
+        console.log("jsondata", jsondata);
+        minJson = await jsondata.json();
+        visJson();
+        addEventListenersToButtons();
+      }
+      function visJson() {
+        modtagerKloner.innerHTML = "";
+        minJson.feed.entry.forEach((person) => {
+          if (filter == "alle" || filter == person.gsx$kategori.$t) {
+            const klon = temp.cloneNode(true).content;
+            klon.querySelector("h2").textContent = person.gsx$navn.$t;
+            klon.querySelector(".kort").textContent = person.gsx$kort.$t;
+            klon.querySelector("img").src =
+              "imgs/small/" + person.gsx$billede.$t + "-sm.jpg";
+            klon.querySelector(".alder").textContent += person.gsx$pris.$t;
+            modtagerKloner.appendChild(klon);
+            modtagerKloner.lastElementChild.addEventListener("click", () => {
+              visSingle(person);
+            });
+          }
+        });
+      }
+
+      function visSingle(person) {
+        document.querySelector("#popup").style.display = "block";
+        document
+          .querySelector("#popup .luk")
+          .addEventListener("click", lukSingle);
+        document.querySelector(".enkeltPerson h2").textContent =
+          person.gsx$navn.$t;
+        document.querySelector(".enkeltPerson .billedeo").src =
+          "imgs/small/" + person.gsx$billede.$t + "-sm.jpg";
+        document.querySelector(".enkeltPerson .billedeo").alt =
+          person.gsx$navn.$t;
+        document.querySelector(".enkeltPerson .kort").textContent =
+          person.gsx$lang.$t;
+      }
+      function lukSingle() {
+        document.querySelector("#popup").style.display = "none";
+      }
+
+      function addEventListenersToButtons() {
+        document.querySelectorAll(".filter").forEach((elm) => {
+          elm.addEventListener("click", filtrering);
+        });
+      }
+      function filtrering() {
+        filter = this.dataset.kategori;
+        document.querySelector("h1").textContent = this.textContent;
+        document.querySelectorAll(".filter").forEach((elm) => {
+          elm.classList.remove("valgt");
+        });
+        this.classList.add("valgt");
+        visJson();
+      }
+    </script>
+  </body>
+</html>
